@@ -35,8 +35,7 @@ Seguir estos pasos para clonar y ejecutar el entorno localmente desde cero:
 
 ## 1. Clonar el repositorio
 ```bash
-git clone [https://github.com/](https://github.com/)[organizacion-o-usuario]/[nombre-del-repo].git
-cd [nombre-del-repo]
+git clone https://github.com/JuanBraun/ProyectoMetodo.git
     
     # Justificación de uso de ramas:Trabajamos en ramas secundarias permite desarrollar y probar cambios de forma aislada sin romper el código funcional del resto del equipo, asegurando que a `main` solo ingresen funcionalidades revisadas mediante Pull Requests.
 
