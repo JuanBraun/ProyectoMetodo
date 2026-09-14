@@ -5,11 +5,11 @@
         # Juan Braun (GIT: JuanBraun, Legajo: 22456)
         # Santiago Vidal (GIT: sanmanuvidal-goat; Legajo: 22762)
 
-# SISTEMA DE SOFTWARE SOBRE MANEJO DE INVENTARIO DE FERRETERÍA 
+# SISTEMA DE SOFTWARE SOBRE MANEJO DE INVENTARIO
 
 ### Taller I
 
-    # Alcance del software: Sistema de software enfocado en la logística interna, trazabilidad y control de stock de depósito para ferreterías, optimizando tiempos de búsqueda y alertando sobre niveles críticos de mercadería.
+    # Alcance del software: Sistema de software enfocado en la logística interna, trazabilidad y control de stock de depósito, optimizando tiempos de búsqueda y alertando sobre niveles críticos de mercadería.
     
 ## Problema que resuelve
     El sistema resuelve las discrepancias de stock físico y los tiempos excesivos de búsqueda en depósito mediante:
@@ -36,17 +36,19 @@ Seguir estos pasos para clonar y ejecutar el entorno localmente desde cero:
 ## 1. Clonar el repositorio
 ```bash
 git clone https://github.com/JuanBraun/ProyectoMetodo.git
-    
+
+2. Reconstruir el entorno y dependencias
+    Instalar dependencias:
+        Bash
+        npm install
+    Configurar variables de entorno:
+        Bash
+        cp .env.example .env
+
+3. Ejecutar la aplicación
+    Bash
+    npm start
+
     # Justificación de uso de ramas:Trabajamos en ramas secundarias permite desarrollar y probar cambios de forma aislada sin romper el código funcional del resto del equipo, asegurando que a `main` solo ingresen funcionalidades revisadas mediante Pull Requests.
 
-    # El archivo `.gitignore` se diseñó para evitar subir archivos innecesarios o sensibles al repositorio público.
-
-    # Manejo de funciones con GIT:
-        # repositorio: Espacio donde se almacena el código fuente junto con todo el historial de cambios del proyecto
-        # commit: Fotografía o registro puntual en el tiempo que guarda modificaciones específicas con un mensaje explicativo.
-        # ramas: Líneas de desarrollo independientes que permiten crear nuevas funciones sin alterar el código principal.
-    
-    # Gestión de dependencias:
-        # Gestores de paquetes: Evitan la necesidad de "reinventar la rueda", permitiendo integrar librerías probadas para tareas complejas (bases de datos, UI, validaciones). Aseguran la consistencia del entorno entre todos los desarrolladores del equipo mediante un archivo de manifiesto estandarizado.
-
-    
+    # El archivo `.gitignore` se diseñó para evitar subir archivos innecesarios o sensibles al repositorio público
