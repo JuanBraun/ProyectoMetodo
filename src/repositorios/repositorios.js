@@ -12,12 +12,12 @@ class ProductoRepository {
     }
 
     async crear(producto) {
-        const { codigo_barras, nombre, descripcion, precio_venta, stock_actual, stock_minimo, stock_max, categoria_id } = producto;
+        const { codigo_barras, nombre, descripcion, precio_venta, stock_actual, stock_minimo, stock_maximo, categoria_id } = producto;
         const [result] = await db.query(
             `INSERT INTO productos 
             (codigo_barras, nombre, descripcion, precio_venta, stock_actual, stock_minimo, stock_max, categoria_id) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [codigo_barras, nombre, descripcion, precio_venta, stock_actual, stock_minimo,stock_max, categoria_id]
+            [codigo_barras, nombre, descripcion, precio_venta, stock_actual, stock_minimo,stock_maximo, categoria_id]
         );
         return { id: result.insertId, ...producto };
     }

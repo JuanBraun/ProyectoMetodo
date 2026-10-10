@@ -24,10 +24,10 @@
 * **Módulo contable:** Desvinculado de libros diarios y balances financieros (funciones propias de un ERP general).
 
 ##  Stack Tecnológico
-* **Runtime / Lenguaje:** [Ej: Node.js v20.x / Python 3.11.x]
-* **Gestor de Dependencias:** [Ej: npm / pip]
-* **Base de Datos:** [Ej: PostgreSQL 16 / SQLite]
-* **Control de Versiones:** Git & GitHub
+- **Runtime / Lenguaje:** Node.js (v20 o superior)
+- **Gestor de Dependencias:** npm
+- **Base de Datos:** [El motor que usen en database.js, ej: PostgreSQL o SQLite]
+- **Control de Versiones:** Git & GitHub
 
 ## Instalación y Reproducibilidad
 

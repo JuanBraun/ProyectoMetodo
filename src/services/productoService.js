@@ -1,12 +1,32 @@
-const productoRepository = require('../repositorios/repositorios');
+// src/services/productoService.js
+const defaultRepository = require('../repositorios/repositorios');
+const stockValidator = require('./stockValidator');
+const stockAlertObserver = require('./observers/stockAlertObserver');
 
 class ProductoService {
+    // Inyección de dependencias (DIP): permite pasar un repositorio mock en tests
+    constructor(repository = defaultRepository) {
+        this.repository = repository;
+        this.observers = [];
+        
+        // Suscribimos por defecto el observer de alertas
+        this.suscribirObserver(stockAlertObserver);
+    }
+
+    suscribirObserver(observer) {
+        this.observers.push(observer);
+    }
+
+    notificarObservers(producto) {
+        this.observers.forEach(obs => obs.notificar(producto));
+    }
+
     async listarProductos() {
-        return await productoRepository.obtenerTodos();
+        return await this.repository.obtenerTodos();
     }
 
     async obtenerProducto(id) {
-        const producto = await productoRepository.obtenerPorId(id);
+        const producto = await this.repository.obtenerPorId(id);
         if (!producto) {
             const error = new Error('Producto no encontrado');
             error.status = 404;
@@ -16,28 +36,22 @@ class ProductoService {
     }
 
     async crearProducto(datosProducto) {
-        // Regla 1: El stock actual no puede ser negativo
-        if (datosProducto.stock_actual < 0) {
-            const error = new Error('El stock inicial no puede ser un valor negativo');
-            error.status = 400;
-            throw error;
-        }
+        // Unificamos el contrato de datos (evita el bug de stock_max vs stock_maximo)
+        const productoNormalizado = {
+            ...datosProducto,
+            stock_maximo: datosProducto.stock_maximo || datosProducto.stock_max
+        };
 
-        // Regla 2: El stock mínimo no puede superar al stock máximo
-        if (Number(datosProducto.stock_minimo) >= Number(datosProducto.stock_maximo)) {
-            const error = new Error('El stock mínimo no puede ser mayor o igual al stock máximo');
-            error.status = 400;
-            throw error;
-        }
+        // 1. Delegamos validación (SRP)
+        stockValidator.validarStockInicial(productoNormalizado);
 
-        // Regla 3: El stock inicial no puede superar el límite del stock máximo
-        if (Number(datosProducto.stock_actual) > Number(datosProducto.stock_maximo)) {
-            const error = new Error('El stock inicial no puede superar el límite del stock máximo configurado');
-            error.status = 400;
-            throw error;
-        }
+        // 2. Persistimos a través de la abstracción inyectada (DIP)
+        const nuevoProducto = await this.repository.crear(productoNormalizado);
 
-        return await productoRepository.crear(datosProducto);
+        // 3. Notificamos a los observadores si requiere alerta (Observer Pattern)
+        this.notificarObservers(nuevoProducto);
+
+        return nuevoProducto;
     }
 }
 
