@@ -11,7 +11,7 @@ El análisis se centró en el flujo completo de la aplicación, abarcando las si
 * **Capa de Servicios y Negocio:** `src/services/productoService.js` (orquestación de la lógica transaccional).
 * **Validación de Reglas:** `src/services/stockValidator.js` (validación estricta de umbrales de stock).
 * **Patrón de Comportamiento:** `src/services/observers/stockAlertObserver.js` (emisión desacoplada de alertas de stock crítico).
-* **Capa de Datos/Persistencia:** `src/repositorios/repositorios.js` (abstracción del almacenamiento).
+* **Capa de Datos/Persistencia:** `src/repositorios/repositorios.js` (abstracción del almacenamiento). 
 
 ---
 
