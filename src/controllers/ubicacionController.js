@@ -1,4 +1,4 @@
-const ubicacionService = reenquire("../services/ubicacionService");
+const ubicacionService = require("../services/ubicacionService");
 
 class UbicacionController {
   async getUbicaciones(req, res, next) {
