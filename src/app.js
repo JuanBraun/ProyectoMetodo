@@ -1,12 +1,14 @@
-const express = require("express");
-const productoRoutes = require("./rutas/productoRutas");
-const movimientoRoutes = require("./rutas/movimientoRutas");
-const categoriaRoutes = require("./rutas/categoriaRutas");
-const ubicacionRoutes = require("./rutas/ubicacionRutas");
-const errorHandler = require("./middlewares/errorHandler");
+import express from "express";
+import cors from "cors";
+import productoRoutes from "./rutas/productoRutas.js";
+import movimientoRoutes from "./rutas/movimientoRutas.js";
+import categoriaRoutes from "./rutas/categoriaRutas.js";
+import ubicacionRoutes from "./rutas/ubicacionRutas.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/productos", productoRoutes);
@@ -16,4 +18,4 @@ app.use("/api/ubicaciones", ubicacionRoutes);
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

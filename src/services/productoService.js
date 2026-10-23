@@ -1,86 +1,105 @@
-// src/services/productoService.js
 const defaultRepository = require("../repositorios/repositorios");
 const stockValidator = require("./stockValidator");
 const stockAlertObserver = require("./observers/stockAlertObserver");
+const ubicacionService = require("./ubicacionService");
 
 class ProductoService {
-  // Inyección de dependencias (DIP): permite pasar un repositorio mock en tests
-  constructor(repository = defaultRepository) {
-    this.repository = repository;
-    this.observers = [];
-
-    // Suscribimos por defecto el observer de alertas
-    this.suscribirObserver(stockAlertObserver);
-  }
-
-  suscribirObserver(observer) {
-    this.observers.push(observer);
-  }
-
-  notificarObservers(producto) {
-    this.observers.forEach((obs) => obs.notificar(producto));
-  }
-
-  async listarProductos() {
-    return await this.repository.obtenerTodos();
-  }
-
-  async obtenerProducto(id) {
-    const producto = await this.repository.obtenerPorId(id);
-    if (!producto) {
-      const error = new Error("Producto no encontrado");
-      error.status = 404;
-      throw error;
+    constructor(repository = defaultRepository) {
+        this.repository = repository;
+        this.observers = [];
+        this.suscribirObserver(stockAlertObserver);
     }
-    return producto;
-  }
 
-  async crearProducto(datosProducto) {
-    // Unificamos el contrato de datos (evita el bug de stock_max vs stock_maximo)
-    const productoNormalizado = {
-      ...datosProducto,
-      stock_maximo: datosProducto.stock_maximo || datosProducto.stock_max,
-    };
+    suscribirObserver(observer) {
+        this.observers.push(observer);
+    }
 
-    // 1. Delegamos validación (SRP)
-    stockValidator.validarStockInicial(productoNormalizado);
+    notificarObservers(producto) {
+        this.observers.forEach((obs) => obs.notificar(producto));
+    }
 
-    // 2. Persistimos a través de la abstracción inyectada (DIP)
-    const nuevoProducto = await this.repository.crear(productoNormalizado);
+    async listarProductos() {
+        return await this.repository.obtenerTodos();
+    }
 
-    // 3. Notificamos a los observadores si requiere alerta (Observer Pattern)
-    this.notificarObservers(nuevoProducto);
+    async obtenerProducto(id) {
+        const producto = await this.repository.obtenerPorId(id);
+        if (!producto) {
+            const error = new Error("Producto no encontrado");
+            error.status = 404;
+            throw error;
+        }
+        return producto;
+    }
 
-    return nuevoProducto;
-  }
+    async crearProducto(datosProducto) {
+        console.log("JSON CRUDO RECIBIDO EN SERVICIO:", JSON.stringify(datosProducto, null, 2));
+        let ubicacionId = datosProducto.ubicacion_id || null;
 
-  async actualizarProducto(id, datosProducto) {
-    // Verificar que exista previamente
-    await this.obtenerProducto(id);
+        if (datosProducto.pasillo && datosProducto.estante && datosProducto.nivel) {
+            try {
+                const nuevaUbicacion = await ubicacionService.crearUbicacion({
+                    pasillo: datosProducto.pasillo,
+                    estante: datosProducto.estante,
+                    nivel: datosProducto.nivel,
+                    descripcion: datosProducto.descripcion_ubicacion || ""
+                });
+                console.log(" Ubicación creada exitosamente:", nuevaUbicacion);
+                ubicacionId = nuevaUbicacion.id;
+            } catch (err) {
+                console.error(" Error interno al crear la ubicación:", err.message);
+                throw err;
+            }
+        } else {
+            console.log(" No entró al IF de ubicación. Los valores recibidos fueron:", {
+                pasillo: datosProducto.pasillo,
+                estante: datosProducto.estante,
+                nivel: datosProducto.nivel
+            });
+        }
 
-    const productoNormalizado = {
-      ...datosProducto,
-      stock_maximo: datosProducto.stock_maximo || datosProducto.stock_max,
-    };
+        const productoNormalizado = {
+            ...datosProducto,
+            stock_max: datosProducto.stock_maximo || datosProducto.stock_max,
+            ubicacion_id: ubicacionId
+        };
 
-    // Validamos reglas de negocio sobre los datos actualizados
-    stockValidator.validarStockInicial(productoNormalizado);
+        stockValidator.validarStockInicial(productoNormalizado);
+        const nuevoProducto = await this.repository.crear(productoNormalizado);
+        this.notificarObservers(nuevoProducto);
+        return nuevoProducto;
+    }
 
-    const productoActualizado = await this.repository.actualizar(
-      id,
-      productoNormalizado,
-    );
+    async actualizarProducto(id, datosProducto) {
+        await this.obtenerProducto(id);
 
-    // Evaluamos si con el nuevo stock se debe disparar alguna alerta
-    this.notificarObservers(productoActualizado);
+        let ubicacionId = datosProducto.ubicacion_id || null;
+        if (datosProducto.pasillo && datosProducto.estante && datosProducto.nivel) {
+            const nuevaUbicacion = await ubicacionService.crearUbicacion({
+                pasillo: datosProducto.pasillo,
+                estante: datosProducto.estante,
+                nivel: datosProducto.nivel,
+                descripcion: datosProducto.descripcion_ubicacion || ""
+            });
+            ubicacionId = nuevaUbicacion.id;
+        }
 
-    return productoActualizado;
-  }
+        const productoNormalizado = {
+            ...datosProducto,
+            stock_max: datosProducto.stock_maximo || datosProducto.stock_max,
+            ubicacion_id: ubicacionId
+        };
 
-  async eliminarProducto(id) {
-    await this.obtenerProducto(id);
-    return await this.repository.eliminar(id);
-  }
+        stockValidator.validarStockInicial(productoNormalizado);
+        const productoActualizado = await this.repository.actualizar(id, productoNormalizado);
+        this.notificarObservers(productoActualizado);
+        return productoActualizado;
+    }
+
+    async eliminarProducto(id) {
+        await this.obtenerProducto(id);
+        return await this.repository.eliminar(id);
+    }
 }
 
 module.exports = new ProductoService();

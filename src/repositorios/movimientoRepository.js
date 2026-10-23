@@ -4,7 +4,7 @@ class MovimientoRepository {
   async registrar(connection, { producto_id, tipo, cantidad, motivo }) {
     const [result] = await connection.query(
       `INSERT INTO movimientos_stock (producto_id, tipo, cantidad, motivo) 
-             VALUES (?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?)`,
       [producto_id, tipo, cantidad, motivo],
     );
     return { id: result.insertId, producto_id, tipo, cantidad, motivo };
