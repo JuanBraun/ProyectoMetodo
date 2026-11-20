@@ -18,6 +18,27 @@ class CategoriaController {
       next(error);
     }
   }
+
+  async updateCategoria(req, res, next) {
+    try {
+      const categoriaActualizada = await categoriaService.actualizarCategoria(
+        req.params.id,
+        req.body,
+      );
+      res.status(200).json(categoriaActualizada);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteCategoria(req, res, next) {
+    try {
+      await categoriaService.eliminarCategoria(req.params.id);
+      res.status(200).json({ mensaje: "Categoría eliminada correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new CategoriaController();
