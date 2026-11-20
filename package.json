@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "init-db": "node src/config/initDb.js",
         "start": "node index.js"
     },
     "keywords": [],
