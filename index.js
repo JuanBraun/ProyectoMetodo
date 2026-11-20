@@ -1,13 +1,15 @@
 import 'dotenv/config';
 import app from "./src/app.js";
-import initDb from "./src/config/initDb.js";
+import pool from "./src/config/database.js";
 
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    // Inicializa la base de datos si no existe
-    await initDb();
+    // Verifica que la base de datos existente esté disponible sin crear ni reiniciar nada
+    const connection = await pool.getConnection();
+    connection.release();
+    console.log("Conectado a la base de datos existente.");
 
     // Levanta el servidor Express
     app.listen(PORT, () => {
@@ -15,7 +17,8 @@ async function startServer() {
     });
   } catch (error) {
     console.error(
-      "No se pudo iniciar el servidor debido a un error en la base de datos.",
+      "No se pudo conectar a la base de datos. Asegurate de haber ejecutado 'npm run init-db' previamente:",
+      error.message
     );
     process.exit(1);
   }
