@@ -94,15 +94,25 @@ DB_PASSWORD=tu_contraseña
 DB_NAME=inventario_db
 ```
 
-### 3. Ejecutar la aplicación
+### 3. Inicializar la base de datos (ejecutar una única vez)
 
-Al iniciar el servidor, el script de inicialización creará/verificará automáticamente la base de datos `inventario_db` y sus tablas:
+Antes de levantar el servidor por primera vez, ejecutá el script independiente para crear la base de datos `inventario_db` y sus tablas:
+
+```bash
+npm run init-db
+```
+
+*(Este comando se corre una sola vez en el entorno. En ejecuciones posteriores del sistema se reutiliza siempre la misma base de datos para conservar los registros persistidos).*
+
+### 4. Ejecutar la aplicación
+
+Cada vez que quieras iniciar el gestor de inventario, corré:
 
 ```bash
 npm start
 ```
 
-El servidor estará corriendo en `http://localhost:3000`.
+El servidor verificará la conexión con la base de datos existente y quedará escuchando en `http://localhost:3000`.
 
 ---
 
@@ -110,4 +120,5 @@ El servidor estará corriendo en `http://localhost:3000`.
 
 - **Uso de Ramas (Git):** El trabajo en ramas secundarias permite desarrollar y probar cambios de forma aislada sin romper el código funcional del resto del equipo, asegurando que a `main` solo ingresen funcionalidades revisadas mediante Pull Requests.
 - **Ignorado de Archivos (`.gitignore`):** El archivo `.gitignore` fue configurado para evitar subir archivos sensibles (`.env`) o carpetas pesadas (`node_modules`) al repositorio público.
+- **Separación de Inicialización y Arranque:** La creación del esquema de base de datos (`npm run init-db`) está desacoplada del arranque del servidor (`npm start`) para garantizar la persistencia de los datos y evitar re-ejecutar scripts DDL en cada inicio.
 - **Arquitectura:** Se aplicó separación de responsabilidades en capas (Rutas, Controladores, Servicios, Repositorios), patrón _Observer_ para desacoplar el envío de alertas de stock e inyección de dependencias para facilitar testing.

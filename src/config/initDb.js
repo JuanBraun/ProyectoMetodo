@@ -10,7 +10,7 @@ async function initDb() {
     port: process.env.DB_PORT || 3306,
     user: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "",
-    multipleStatements: true, // Permite ejecutar todo el archivo .sql de una sola vez
+    multipleStatements: true, 
   });
 
   try {
@@ -20,7 +20,7 @@ async function initDb() {
 
     // 3. Ejecutar las sentencias del script
     await connection.query(sql);
-    console.log("Base de datos y tablas verificadas/creadas correctamente.");
+    console.log("Base de datos y tablas creadas e inicializadas correctamente.");
   } catch (error) {
     console.error("Error al inicializar la base de datos:", error.message);
     throw error;
@@ -29,4 +29,10 @@ async function initDb() {
   }
 }
 
-module.exports = initDb;
+initDb()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("Fallo crítico:", err.message);
+    process.exit(1);
+  });
+  
