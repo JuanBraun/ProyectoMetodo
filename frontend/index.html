@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Inventario - Depósito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark px-4 py-3 mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1 fs-5">Gestor de Inventario</span>
+            <span class="text-secondary small" id="estadoConexion">Conectando a API...</span>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <div id="alertaGlobal" class="alert d-none" role="alert"></div>
+
+        <!-- Resumen Rápido -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card p-3">
+                    <div class="text-muted small">Total Productos</div>
+                    <div class="fs-4 fw-bold" id="statTotalProductos">0</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card p-3">
+                    <div class="text-muted small">Stock Crítico / Bajo</div>
+                    <div class="fs-4 fw-bold text-danger" id="statStockBajo">0</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card p-3">
+                    <div class="text-muted small">Categorías</div>
+                    <div class="fs-4 fw-bold" id="statCategorias">0</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card p-3">
+                    <div class="text-muted small">Ubicaciones</div>
+                    <div class="fs-4 fw-bold" id="statUbicaciones">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación por Pestañas -->
+        <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-productos-btn" data-bs-toggle="tab" data-bs-target="#tab-productos" type="button" role="tab">Productos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-movimientos-btn" data-bs-toggle="tab" data-bs-target="#tab-movimientos" type="button" role="tab">Movimientos de Stock</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-categorias-btn" data-bs-toggle="tab" data-bs-target="#tab-categorias" type="button" role="tab">Categorías</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-ubicaciones-btn" data-bs-toggle="tab" data-bs-target="#tab-ubicaciones" type="button" role="tab">Ubicaciones</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="mainTabsContent">
+            <!-- 1. PRODUCTOS -->
+            <div class="tab-pane fade show active" id="tab-productos" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card p-4">
+                            <h5 class="mb-3" id="formTitulo">Nuevo Producto</h5>
+                            <form id="productoForm">
+                                <div class="mb-2">
+                                    <label for="codigo_barras" class="form-label small fw-semibold">Código de Barras</label>
+                                    <input type="text" class="form-control form-control-sm" id="codigo_barras" placeholder="Ej: 7791234567890">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="nombre" class="form-label small fw-semibold">Nombre *</label>
+                                    <input type="text" class="form-control form-control-sm" id="nombre" required>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="descripcion" class="form-label small fw-semibold">Descripción</label>
+                                    <textarea class="form-control form-control-sm" id="descripcion" rows="2"></textarea>
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label for="precio_venta" class="form-label small fw-semibold">Precio Venta ($) *</label>
+                                        <input type="number" step="0.01" min="0" class="form-control form-control-sm" id="precio_venta" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="categoria_id" class="form-label small fw-semibold">Categoría</label>
+                                        <select class="form-select form-select-sm" id="categoria_id">
+                                            <option value="">Sin categoría</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-4">
+                                        <label for="stock_actual" class="form-label small fw-semibold">Stock Actual *</label>
+                                        <input type="number" min="0" class="form-control form-control-sm" id="stock_actual" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="stock_minimo" class="form-label small fw-semibold">Mínimo *</label>
+                                        <input type="number" min="0" class="form-control form-control-sm" id="stock_minimo" value="1" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="stock_max" class="form-label small fw-semibold">Máximo *</label>
+                                        <input type="number" min="1" class="form-control form-control-sm" id="stock_max" required>
+                                    </div>
+                                </div>
+
+                                <fieldset class="border rounded p-3 mb-3 bg-light">
+                                    <legend class="float-none w-auto px-2 fs-6 fw-semibold text-secondary">Ubicación en Depósito</legend>
+                                    <div class="mb-2">
+                                        <label for="ubicacion_id" class="form-label small">Seleccionar existente</label>
+                                        <select class="form-select form-select-sm" id="ubicacion_id">
+                                            <option value="">-- Crear nueva ubicación abajo --</option>
+                                        </select>
+                                    </div>
+                                    <div id="camposNuevaUbicacion">
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <label for="pasillo" class="form-label small">Pasillo</label>
+                                                <input type="text" class="form-control form-control-sm" id="pasillo" placeholder="Ej: A">
+                                            </div>
+                                            <div class="col-4">
+                                                <label for="estante" class="form-label small">Estante</label>
+                                                <input type="text" class="form-control form-control-sm" id="estante" placeholder="Ej: 1">
+                                            </div>
+                                            <div class="col-4">
+                                                <label for="nivel" class="form-label small">Nivel</label>
+                                                <input type="text" class="form-control form-control-sm" id="nivel" placeholder="Ej: 2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+
+                                <button type="submit" id="btnSubmit" class="btn btn-dark btn-sm w-100 py-2">Guardar Producto</button>
+                                <button type="button" id="btnCancelar" class="btn btn-outline-secondary btn-sm w-100 mt-2 d-none">Cancelar Edición</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="card p-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <h5 class="mb-0">Catálogo de Artículos</h5>
+                                <input type="text" id="buscadorProductos" class="form-control form-control-sm w-auto" style="min-width: 240px;" placeholder="Buscar por nombre o código...">
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Artículo</th>
+                                            <th>Precio</th>
+                                            <th>Stock (Mín / Máx)</th>
+                                            <th>Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaProductos"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. MOVIMIENTOS -->
+            <div class="tab-pane fade" id="tab-movimientos" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card p-4">
+                            <h5 class="mb-3">Registrar Movimiento</h5>
+                            <form id="movimientoForm">
+                                <div class="mb-3">
+                                    <label for="movProductoId" class="form-label small fw-semibold">Producto *</label>
+                                    <select class="form-select form-select-sm" id="movProductoId" required>
+                                        <option value="">Seleccione un producto...</option>
+                                    </select>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label for="movTipo" class="form-label small fw-semibold">Tipo *</label>
+                                        <select class="form-select form-select-sm" id="movTipo" required>
+                                            <option value="INGRESO">INGRESO (+)</option>
+                                            <option value="EGRESO">EGRESO (-)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="movCantidad" class="form-label small fw-semibold">Cantidad *</label>
+                                        <input type="number" min="1" class="form-control form-control-sm" id="movCantidad" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="movMotivo" class="form-label small fw-semibold">Motivo / Referencia</label>
+                                    <input type="text" class="form-control form-control-sm" id="movMotivo" placeholder="Ej: Compra proveedor / Retiro obra">
+                                </div>
+                                <button type="submit" class="btn btn-dark btn-sm w-100 py-2">Registrar Movimiento</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Historial de Movimientos</h5>
+                                <span class="text-muted small" id="historialSubtitulo">Seleccioná un producto para ver su trazabilidad</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Tipo</th>
+                                            <th>Cantidad</th>
+                                            <th>Motivo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaHistorial">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">Sin producto seleccionado.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CATEGORÍAS -->
+            <div class="tab-pane fade" id="tab-categorias" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card p-4">
+                            <h5 class="mb-3" id="catFormTitulo">Nueva Categoría</h5>
+                            <form id="categoriaForm">
+                                <div class="mb-3">
+                                    <label for="catNombre" class="form-label small fw-semibold">Nombre *</label>
+                                    <input type="text" class="form-control form-control-sm" id="catNombre" placeholder="Ej: Herramientas Eléctricas" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="catDescripcion" class="form-label small fw-semibold">Descripción</label>
+                                    <textarea class="form-control form-control-sm" id="catDescripcion" rows="2"></textarea>
+                                </div>
+                                <button type="submit" id="btnCatSubmit" class="btn btn-dark btn-sm w-100 py-2">Crear Categoría</button>
+                                <button type="button" id="btnCatCancelar" class="btn btn-outline-secondary btn-sm w-100 mt-2 d-none">Cancelar Edición</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4">
+                            <h5 class="mb-3">Categorías Registradas</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaCategorias"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. UBICACIONES -->
+            <div class="tab-pane fade" id="tab-ubicaciones" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card p-4">
+                            <h5 class="mb-3" id="ubiFormTitulo">Nueva Ubicación</h5>
+                            <form id="ubicacionForm">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-4">
+                                        <label for="ubiPasillo" class="form-label small fw-semibold">Pasillo *</label>
+                                        <input type="text" class="form-control form-control-sm" id="ubiPasillo" placeholder="A" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="ubiEstante" class="form-label small fw-semibold">Estante *</label>
+                                        <input type="text" class="form-control form-control-sm" id="ubiEstante" placeholder="01" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="ubiNivel" class="form-label small fw-semibold">Nivel *</label>
+                                        <input type="text" class="form-control form-control-sm" id="ubiNivel" placeholder="2" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ubiDescripcion" class="form-label small fw-semibold">Descripción</label>
+                                    <input type="text" class="form-control form-control-sm" id="ubiDescripcion" placeholder="Ej: Sector tornillería pesada">
+                                </div>
+                                <button type="submit" id="btnUbiSubmit" class="btn btn-dark btn-sm w-100 py-2">Crear Ubicación</button>
+                                <button type="button" id="btnUbiCancelar" class="btn btn-outline-secondary btn-sm w-100 mt-2 d-none">Cancelar Edición</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4">
+                            <h5 class="mb-3">Ubicaciones en Depósito</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Pasillo</th>
+                                            <th>Estante</th>
+                                            <th>Nivel</th>
+                                            <th>Descripción</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaUbicaciones"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>

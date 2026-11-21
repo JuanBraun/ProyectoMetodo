@@ -18,6 +18,27 @@ class UbicacionController {
       next(error);
     }
   }
+
+  async updateUbicacion(req, res, next) {
+    try {
+      const ubicacionActualizada = await ubicacionService.actualizarUbicacion(
+        req.params.id,
+        req.body,
+      );
+      res.status(200).json(ubicacionActualizada);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteUbicacion(req, res, next) {
+    try {
+      await ubicacionService.eliminarUbicacion(req.params.id);
+      res.status(200).json({ mensaje: "Ubicación eliminada correctamente" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new UbicacionController();
