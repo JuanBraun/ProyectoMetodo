@@ -20,6 +20,15 @@ class MovimientoController {
       next(error);
     }
   }
+
+  async listar(req, res, next) {
+    try {
+      const resultado = await movimientoService.listarMovimientos(req.query);
+      res.status(200).json(resultado);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new MovimientoController();

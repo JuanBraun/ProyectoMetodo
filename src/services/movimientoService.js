@@ -73,6 +73,10 @@ class MovimientoService {
     await productoService.obtenerProducto(producto_id);
     return await movimientoRepository.obtenerPorProductoId(producto_id);
   }
+
+  async listarMovimientos(query) {
+    return await movimientoRepository.listarPaginado(query);
+  }
 }
 
 module.exports = new MovimientoService();
