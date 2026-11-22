@@ -58,8 +58,11 @@ class ProductoService {
             });
         }
 
+        const codigoGenerado = await this.repository.obtenerSiguienteCodigoBarras();
+
         const productoNormalizado = {
             ...datosProducto,
+            codigo_barras: codigoGenerado,
             stock_max: datosProducto.stock_maximo || datosProducto.stock_max,
             ubicacion_id: ubicacionId
         };
@@ -72,6 +75,8 @@ class ProductoService {
 
     async actualizarProducto(id, datosProducto) {
         await this.obtenerProducto(id);
+
+        const productoActual = await this.obtenerProducto(id);
 
         let ubicacionId = datosProducto.ubicacion_id || null;
         if (datosProducto.pasillo && datosProducto.estante && datosProducto.nivel) {
@@ -86,6 +91,7 @@ class ProductoService {
 
         const productoNormalizado = {
             ...datosProducto,
+            codigo_barras: productoActual.codigo_barras,
             stock_max: datosProducto.stock_maximo || datosProducto.stock_max,
             ubicacion_id: ubicacionId
         };

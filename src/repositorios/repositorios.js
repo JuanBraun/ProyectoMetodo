@@ -68,6 +68,16 @@ async crear(producto) {
         const [result] = await db.query('DELETE FROM productos WHERE id = ?', [id]);
         return result.affectedRows > 0;
     }
+
+    async obtenerSiguienteCodigoBarras() {
+        const [rows] = await db.query(
+            `SELECT MAX(CAST(SUBSTRING(codigo_barras, 6) AS UNSIGNED)) AS max_num
+             FROM productos
+             WHERE codigo_barras REGEXP '^75000[0-9]{4}$'`
+        );
+        const siguiente = (rows[0]?.max_num || 0) + 1;
+        return `75000${String(siguiente).padStart(4, '0')}`;
+    }
 }
 
 module.exports = new ProductoRepository();

@@ -72,10 +72,6 @@
                             <h5 class="mb-3" id="formTitulo">Nuevo Producto</h5>
                             <form id="productoForm">
                                 <div class="mb-2">
-                                    <label for="codigo_barras" class="form-label small fw-semibold">Código de Barras</label>
-                                    <input type="text" class="form-control form-control-sm" id="codigo_barras" placeholder="Ej: 7791234567890">
-                                </div>
-                                <div class="mb-2">
                                     <label for="nombre" class="form-label small fw-semibold">Nombre *</label>
                                     <input type="text" class="form-control form-control-sm" id="nombre" required>
                                 </div>
@@ -267,6 +263,8 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
             <!-- 3. CATEGORÍAS -->
             <div class="tab-pane fade" id="tab-categorias" role="tabpanel">
@@ -290,7 +288,10 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h5 class="mb-3">Categorías Registradas</h5>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <h5 class="mb-0">Categorías Registradas</h5>
+                                <input type="text" id="buscadorCategorias" class="form-control form-control-sm w-auto" style="min-width: 220px;" placeholder="Buscar por ID o nombre...">
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
@@ -341,7 +342,10 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h5 class="mb-3">Ubicaciones en Depósito</h5>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <h5 class="mb-0">Ubicaciones en Depósito</h5>
+                                <input type="text" id="buscadorUbicaciones" class="form-control form-control-sm w-auto" style="min-width: 220px;" placeholder="Buscar por ID...">
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">

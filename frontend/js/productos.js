@@ -80,7 +80,6 @@ function cargarParaEditar(id) {
     if (!prod) return;
 
     productoEditandoId = prod.id;
-    document.getElementById('codigo_barras').value = prod.codigo_barras || '';
     document.getElementById('nombre').value = prod.nombre;
     document.getElementById('descripcion').value = prod.descripcion || '';
     document.getElementById('precio_venta').value = prod.precio_venta;
@@ -128,10 +127,8 @@ export function initProductosEvents({ onRefreshAll, onIrAMovimiento }) {
 
         const ubicacionId = document.getElementById('ubicacion_id').value;
         const categoriaId = document.getElementById('categoria_id').value;
-        const codigoBarras = document.getElementById('codigo_barras').value.trim();
 
         const datosProducto = {
-            codigo_barras: codigoBarras || null,
             nombre: document.getElementById('nombre').value.trim(),
             descripcion: document.getElementById('descripcion').value.trim(),
             precio_venta: parseFloat(document.getElementById('precio_venta').value),

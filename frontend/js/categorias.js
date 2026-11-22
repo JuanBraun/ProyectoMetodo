@@ -7,21 +7,28 @@ export function getCategoriasCache() {
     return categoriasCache;
 }
 
-export async function cargarCategorias(onUpdateStats) {
-    categoriasCache = await fetchJson(`${API_BASE}/categorias`);
-    const select = document.getElementById('categoria_id');
+export function renderizarTablaCategorias() {
     const tbody = document.getElementById('tablaCategorias');
-    const valorPrevio = select.value;
+    const termino = (document.getElementById('buscadorCategorias')?.value || '').trim().toLowerCase();
 
-    select.innerHTML = '<option value="">Sin categoría</option>';
+    const filtradas = termino
+        ? categoriasCache.filter(cat =>
+            String(cat.id).includes(termino) ||
+            (cat.nombre && cat.nombre.toLowerCase().includes(termino))
+        )
+        : categoriasCache;
+
     tbody.innerHTML = '';
 
-    if (categoriasCache.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No hay categorías cargadas.</td></tr>';
+    if (filtradas.length === 0) {
+        const msg = termino
+            ? 'No se encontraron categorías con ese criterio.'
+            : 'No hay categorías cargadas.';
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">${msg}</td></tr>`;
+        return;
     }
 
-    categoriasCache.forEach(cat => {
-        select.innerHTML += `<option value="${cat.id}">${cat.nombre}</option>`;
+    filtradas.forEach(cat => {
         tbody.innerHTML += `
             <tr>
                 <td>${cat.id}</td>
@@ -34,6 +41,19 @@ export async function cargarCategorias(onUpdateStats) {
             </tr>
         `;
     });
+}
+
+export async function cargarCategorias(onUpdateStats) {
+    categoriasCache = await fetchJson(`${API_BASE}/categorias`);
+    const select = document.getElementById('categoria_id');
+    const valorPrevio = select.value;
+
+    select.innerHTML = '<option value="">Sin categoría</option>';
+    categoriasCache.forEach(cat => {
+        select.innerHTML += `<option value="${cat.id}">${cat.nombre}</option>`;
+    });
+
+    renderizarTablaCategorias();
 
     if (valorPrevio) select.value = valorPrevio;
     if (onUpdateStats) onUpdateStats();
@@ -46,7 +66,7 @@ function cargarParaEditar(id) {
     categoriaEditandoId = cat.id;
     document.getElementById('catNombre').value = cat.nombre;
     document.getElementById('catDescripcion').value = cat.descripcion || '';
-    document.getElementById('catFormTitulo').textContent = `Editando: ${cat.nombre}`;
+    document.getElementById('catFormTitulo').textContent = `Editando Categoría #${cat.id}`;
     document.getElementById('btnCatSubmit').textContent = 'Actualizar Categoría';
     document.getElementById('btnCatCancelar').classList.remove('d-none');
 }
@@ -72,6 +92,8 @@ async function eliminarCategoria(id, onRefresh) {
 }
 
 export function initCategoriasEvents(onRefresh) {
+    document.getElementById('buscadorCategorias').addEventListener('input', renderizarTablaCategorias);
+
     document.getElementById('categoriaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const payload = {
