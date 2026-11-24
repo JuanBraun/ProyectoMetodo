@@ -1,6 +1,6 @@
 # ProyectoMetodología - Sistema de Manejo de Inventario
 
-### Taller I & II
+### Taller III - Calidad y preparación
 
 **Integrantes:**
 

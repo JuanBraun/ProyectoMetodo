@@ -1,15 +1,12 @@
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-import productoRoutes from "./rutas/productoRutas.js";
-import movimientoRoutes from "./rutas/movimientoRutas.js";
-import categoriaRoutes from "./rutas/categoriaRutas.js";
-import ubicacionRoutes from "./rutas/ubicacionRutas.js";
-import errorHandler from "./middlewares/errorHandler.js";
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const productoRoutes = require("./rutas/productoRutas");
+const movimientoRoutes = require("./rutas/movimientoRutas");
+const categoriaRoutes = require("./rutas/categoriaRutas");
+const ubicacionRoutes = require("./rutas/ubicacionRutas");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -24,4 +21,4 @@ app.use("/api/ubicaciones", ubicacionRoutes);
 
 app.use(errorHandler);
 
-export default app;
+module.exports = app
