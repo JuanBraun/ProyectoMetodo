@@ -58,10 +58,14 @@ El sistema resuelve las discrepancias de stock físico y los tiempos excesivos d
 - **Categorías (`/api/categorias`):**
   - `GET /api/categorias` - Listar categorías
   - `POST /api/categorias` - Crear una nueva categoría
+  - `PUT /api/categorias/:id` - Actualizar una categoría existente
+  - `DELETE /api/categorias/:id` - Eliminar una categoría
 
 - **Ubicaciones (`/api/ubicaciones`):**
   - `GET /api/ubicaciones` - Listar pasillos y estantes
   - `POST /api/ubicaciones` - Registrar nueva ubicación en depósito
+  - `PUT /api/ubicaciones/:id` - Actualizar una ubicación existente
+  - `DELETE /api/ubicaciones/:id` - Eliminar una ubicación
 
 ---
 

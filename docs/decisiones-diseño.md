@@ -53,3 +53,16 @@ Se evaluaron tres opciones de diseño para resolver la emisión de alertas de st
   * Código preparado para testing unitario.
 * **Costos / Trade-offs:** 
   * Incremento leve en la cantidad de archivos y abstracciones en comparación con un script monolítico básico, lo cual demanda una curva de aprendizaje inicial levemente mayor para el equipo, compensada ampliamente por la robustez estructural.
+
+##TALLER III
+
+#DECISIONES:
+* **Separación de Inicialización y Arranque (`npm run init-db` vs `npm start`)**
+  * **Contexto:** Ejecutar la creación de la base de datos y las tablas (`initDb.js`) en cada arranque del servidor podía pisar datos existentes o fallar cuando la base ya estaba inicializada.
+  * **Alternativas:**
+
+    1. Ejecutar el DDL/inicialización dentro del arranque normal del servidor (`index.js`).
+    2. Separar `npm run init-db` (`node src/config/initDb.js`) para correrlo una sola vez al preparar el entorno y dejar `npm start` (`node index.js`) solo para levantar la aplicación.
+
+  * **Decisión:** Se eligió la **alternativa 2** para proteger los datos persistidos y dejar el arranque del servidor limpio y predecible.
+  * **Trade-offs:** Requiere recordar ejecutar `npm run init-db` la primera vez antes de usar `npm start`, a cambio de evitar sobreescrituras o fallos en arranques posteriores.
