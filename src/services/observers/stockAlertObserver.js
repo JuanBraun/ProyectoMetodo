@@ -8,6 +8,8 @@ class StockAlertObserver {
             );
         }
     }
+
+    
 }
 
 module.exports = new StockAlertObserver();
