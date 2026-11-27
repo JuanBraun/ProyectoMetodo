@@ -54,9 +54,9 @@ Se evaluaron tres opciones de diseño para resolver la emisión de alertas de st
 * **Costos / Trade-offs:** 
   * Incremento leve en la cantidad de archivos y abstracciones en comparación con un script monolítico básico, lo cual demanda una curva de aprendizaje inicial levemente mayor para el equipo, compensada ampliamente por la robustez estructural.
 
-##TALLER III
+## TALLER III
 
-#DECISIONES:
+# DECISIONES:
 * **Separación de Inicialización y Arranque (`npm run init-db` vs `npm start`)**
   * **Contexto:** Ejecutar la creación de la base de datos y las tablas (`initDb.js`) en cada arranque del servidor podía pisar datos existentes o fallar cuando la base ya estaba inicializada.
   * **Alternativas:**
