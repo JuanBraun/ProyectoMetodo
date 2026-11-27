@@ -78,6 +78,7 @@ Seguir estos pasos para clonar y ejecutar el entorno localmente desde cero:
 ```bash
 git clone https://github.com/JuanBraun/ProyectoMetodo.git
 cd ProyectoMetodo
+code .
 ```
 
 ### 2. Configurar el entorno e instalar dependencias
