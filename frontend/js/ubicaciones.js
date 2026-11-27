@@ -7,21 +7,25 @@ export function getUbicacionesCache() {
     return ubicacionesCache;
 }
 
-export async function cargarUbicaciones(onUpdateStats) {
-    ubicacionesCache = await fetchJson(`${API_BASE}/ubicaciones`);
-    const select = document.getElementById('ubicacion_id');
+export function renderizarTablaUbicaciones() {
     const tbody = document.getElementById('tablaUbicaciones');
-    const valorPrevio = select.value;
+    const termino = (document.getElementById('buscadorUbicaciones')?.value || '').trim();
 
-    select.innerHTML = '<option value="">-- Crear nueva ubicación abajo --</option>';
+    const filtradas = termino
+        ? ubicacionesCache.filter(ubi => String(ubi.id).includes(termino))
+        : ubicacionesCache;
+
     tbody.innerHTML = '';
 
-    if (ubicacionesCache.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No hay ubicaciones cargadas.</td></tr>';
+    if (filtradas.length === 0) {
+        const msg = termino
+            ? 'No se encontraron ubicaciones con ese ID.'
+            : 'No hay ubicaciones cargadas.';
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">${msg}</td></tr>`;
+        return;
     }
 
-    ubicacionesCache.forEach(ubi => {
-        select.innerHTML += `<option value="${ubi.id}">Pasillo ${ubi.pasillo} - Estante ${ubi.estante} - Nivel ${ubi.nivel}</option>`;
+    filtradas.forEach(ubi => {
         tbody.innerHTML += `
             <tr>
                 <td>${ubi.id}</td>
@@ -36,6 +40,19 @@ export async function cargarUbicaciones(onUpdateStats) {
             </tr>
         `;
     });
+}
+
+export async function cargarUbicaciones(onUpdateStats) {
+    ubicacionesCache = await fetchJson(`${API_BASE}/ubicaciones`);
+    const select = document.getElementById('ubicacion_id');
+    const valorPrevio = select.value;
+
+    select.innerHTML = '<option value="">-- Crear nueva ubicación abajo --</option>';
+    ubicacionesCache.forEach(ubi => {
+        select.innerHTML += `<option value="${ubi.id}">Pasillo ${ubi.pasillo} - Estante ${ubi.estante} - Nivel ${ubi.nivel}</option>`;
+    });
+
+    renderizarTablaUbicaciones();
 
     if (valorPrevio) select.value = valorPrevio;
     if (onUpdateStats) onUpdateStats();
@@ -76,6 +93,8 @@ async function eliminarUbicacion(id, onRefresh) {
 }
 
 export function initUbicacionesEvents(onRefresh) {
+    document.getElementById('buscadorUbicaciones').addEventListener('input', renderizarTablaUbicaciones);
+
     document.getElementById('ubicacionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const payload = {

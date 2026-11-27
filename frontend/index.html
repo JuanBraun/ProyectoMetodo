@@ -72,10 +72,6 @@
                             <h5 class="mb-3" id="formTitulo">Nuevo Producto</h5>
                             <form id="productoForm">
                                 <div class="mb-2">
-                                    <label for="codigo_barras" class="form-label small fw-semibold">Código de Barras</label>
-                                    <input type="text" class="form-control form-control-sm" id="codigo_barras" placeholder="Ej: 7791234567890">
-                                </div>
-                                <div class="mb-2">
                                     <label for="nombre" class="form-label small fw-semibold">Nombre *</label>
                                     <input type="text" class="form-control form-control-sm" id="nombre" required>
                                 </div>
@@ -204,15 +200,46 @@
 
                     <div class="col-lg-8">
                         <div class="card p-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Historial de Movimientos</h5>
-                                <span class="text-muted small" id="historialSubtitulo">Seleccioná un producto para ver su trazabilidad</span>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <div>
+                                    <h5 class="mb-0">Historial de Movimientos</h5>
+                                    <span class="text-muted small" id="historialSubtitulo">Historial general de entradas y salidas</span>
+                                </div>
+                                <span class="badge bg-secondary-subtle text-dark" id="movTotalBadge">0 registros</span>
                             </div>
+
+                            <!-- Barra de búsqueda y filtros -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-5">
+                                    <input
+                                        type="text"
+                                        id="buscadorMovimientos"
+                                        class="form-control form-control-sm"
+                                        placeholder="Buscar por motivo o producto..."
+                                    >
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="filtroTipoMovimiento" class="form-select form-select-sm">
+                                        <option value="">Todos los tipos</option>
+                                        <option value="INGRESO">Solo Ingresos (+)</option>
+                                        <option value="EGRESO">Solo Egresos (-)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="limitMovimientos" class="form-select form-select-sm">
+                                        <option value="5">5 por pág.</option>
+                                        <option value="10" selected>10 por pág.</option>
+                                        <option value="20">20 por pág.</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
                                             <th>Fecha</th>
+                                            <th>Producto</th>
                                             <th>Tipo</th>
                                             <th>Cantidad</th>
                                             <th>Motivo</th>
@@ -220,10 +247,19 @@
                                     </thead>
                                     <tbody id="tablaHistorial">
                                         <tr>
-                                            <td colspan="4" class="text-center text-muted py-4">Sin producto seleccionado.</td>
+                                            <td colspan="5" class="text-center text-muted py-4">Cargando movimientos...</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <!-- Controles de Paginación -->
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top small">
+                                <span class="text-muted" id="movPaginacionInfo">Página 1 de 1</span>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-secondary" id="btnMovPrev" disabled>Anterior</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="btnMovNext" disabled>Siguiente</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -252,7 +288,10 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h5 class="mb-3">Categorías Registradas</h5>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <h5 class="mb-0">Categorías Registradas</h5>
+                                <input type="text" id="buscadorCategorias" class="form-control form-control-sm w-auto" style="min-width: 220px;" placeholder="Buscar por ID o nombre...">
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
@@ -303,7 +342,10 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h5 class="mb-3">Ubicaciones en Depósito</h5>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                <h5 class="mb-0">Ubicaciones en Depósito</h5>
+                                <input type="text" id="buscadorUbicaciones" class="form-control form-control-sm w-auto" style="min-width: 220px;" placeholder="Buscar por ID...">
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
