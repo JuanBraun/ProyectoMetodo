@@ -1,4 +1,4 @@
-const defaultRepository = require("../repositorios/repositorios");
+const defaultRepository = require("../repositorios/productoRepository");
 const stockValidator = require("./stockValidator");
 const stockAlertObserver = require("./observers/stockAlertObserver");
 const ubicacionService = require("./ubicacionService");
